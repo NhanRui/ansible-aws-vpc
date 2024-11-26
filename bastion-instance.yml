@@ -50,10 +50,6 @@
           Project: Ansible
           Owner: DevOps Team
         exact_count: 1
-        filters:
-          Name: Bastion_host
-          Project: Ansible
-          Owner: DevOps Team
         security_group: "{{BastionSG_out.group_id}}"
         vpc_subnet_id: "{{pubsub1id}}"
       register: bastionHost_out
