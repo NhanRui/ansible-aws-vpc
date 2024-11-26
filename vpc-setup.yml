@@ -114,7 +114,6 @@
       ec2_vpc_route_table:
         vpc_id: "{{vpcout.vpc.id}}"
         region: "{{region}}"
-        # state: "{{state}}"
         resource_tags:
           Name: vprofile-PubRT
           Project: Ansible
@@ -126,3 +125,31 @@
           - dest: 0.0.0.0/0
             gateway_id: "{{igw_out.gateway_id}}"
       register: pubRT_out
+
+    - name: Set up NAT Gateway and eallocate EIP if a NAT gateway does not yet exist
+      ec2_vpc_nat_gateway:
+        subnet_id: "{{pubsub1_out.subnet.id}}"
+        state: "{{state}}"
+        wait: yes
+        region: "{{region}}"
+        if_exist_do_not_create: true
+        resource_tags:
+          Name: vprofile-NATGW
+          Project: Ansible
+      register: NATGW_out
+
+    - name: Set up Private subnet route table
+      ec2_vpc_route_table:
+        vpc_id: "{{vpcout.vpc.id}}"
+        region: "{{region}}"
+        resource_tags:
+          Name: vprofile-PrivRT
+          Project: Ansible
+        subnets:
+          - "{{privsub1_out.subnet.id}}"
+          - "{{privsub2_out.subnet.id}}"
+          - "{{privsub3_out.subnet.id}}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{NATGW_out.nat_gateway_id}}"
+      register: privRT_out
