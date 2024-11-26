@@ -108,4 +108,4 @@
         resource_tags:
           Name: vprofile-igw
           Project: Ansible
-      registry: igw_out
+      register: igw_out
